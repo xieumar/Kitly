@@ -1,35 +1,63 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { Feather } from '@expo/vector-icons';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+function KitlyTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const tabs = [
+    { name: 'index', label: 'HOME', icon: 'home' as const },
+    { name: 'converter', label: 'CONVERTER', icon: 'repeat' as const },
+    { name: 'notes', label: 'NOTES', icon: 'file-text' as const },
+  ];
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
+    <View
+      style={{
+        flexDirection: 'row',
+        backgroundColor: '#0d1117',
+        borderTopWidth: 1,
+        borderTopColor: '#1e2736',
+        paddingBottom: 24,
+        paddingTop: 12,
+      }}
+    >
+      {tabs.map((tab, index) => {
+        const isFocused = state.index === index;
+        return (
+          <TouchableOpacity
+            key={tab.name}
+            onPress={() => navigation.navigate(tab.name)}
+            style={{ flex: 1, alignItems: 'center', gap: 4 }}
+            activeOpacity={0.7}
+          >
+            <Feather
+              name={tab.icon}
+              size={20}
+              color={isFocused ? '#2ecc8f' : '#4a5568'}
+            />
+            <Text
+              style={{
+                fontSize: 9,
+                letterSpacing: 1,
+                fontWeight: '600',
+                color: isFocused ? '#2ecc8f' : '#4a5568',
+              }}
+            >
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+export default function TabsLayout() {
+  return (
+    <Tabs tabBar={(props) => <KitlyTabBar {...props} />} screenOptions={{ headerShown: false }}>
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="converter" />
+      <Tabs.Screen name="notes" />
     </Tabs>
   );
 }
