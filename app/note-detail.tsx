@@ -8,13 +8,14 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Colors } from '@/src/constants/colors';
 import { NOTES, LINKED_PROJECTS } from '@/src/constants/mockData';
 
-type FormatAction = 'bold' | 'italic' | 'list' | 'code' | 'quote' | 'image';
+
 
 type FormatButtonProps = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -89,7 +90,7 @@ export default function NoteDetailScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
           <Ionicons name="arrow-back" size={20} color={Colors.textSecondary} />
@@ -185,20 +186,21 @@ export default function NoteDetailScreen() {
 
         <Animated.View entering={FadeInDown.delay(310).duration(400)} style={styles.linkedCard}>
           <Text style={styles.linkedTitle}>Linked Projects</Text>
-          {LINKED_PROJECTS.map((project, i) => (
-            <LinkedProjectCard
-              key={project.id}
-              name={project.name}
-              subtitle={project.subtitle}
-              icon={project.icon as keyof typeof Ionicons.glyphMap}
-              hasAccent={i === 0}
-            />
-          ))}
+          {React.Children.toArray(
+            LINKED_PROJECTS.map((project, i) => (
+              <LinkedProjectCard
+                name={project.name}
+                subtitle={project.subtitle}
+                icon={project.icon as keyof typeof Ionicons.glyphMap}
+                hasAccent={i === 0}
+              />
+            ))
+          )}
         </Animated.View>
 
         <View style={{ height: 40 }} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 56,
+    paddingTop: 0,
     paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,

@@ -1,15 +1,15 @@
 import { Tabs } from 'expo-router';
 import { StyleSheet, View, Text } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/src/constants/colors';
 
 type TabIconProps = {
   name: keyof typeof Ionicons.glyphMap;
   focused: boolean;
-  label: string;
 };
 
-function TabIcon({ name, focused, label }: TabIconProps) {
+function TabIcon({ name, focused }: TabIconProps) {
   return (
     <View style={styles.tabItem}>
       <Ionicons
@@ -17,16 +17,15 @@ function TabIcon({ name, focused, label }: TabIconProps) {
         size={20}
         color={focused ? Colors.accent : Colors.textMuted}
       />
-      <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>
-        {label}
-      </Text>
+     
     </View>
   );
 }
 
 export default function TabLayout() {
   return (
-    <Tabs
+    <SafeAreaProvider>
+      <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
@@ -37,7 +36,7 @@ export default function TabLayout() {
         name="index"
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon name="home-outline" focused={focused} label="HOME" />
+            <TabIcon name="home-outline" focused={focused}  />
           ),
         }}
       />
@@ -45,7 +44,7 @@ export default function TabLayout() {
         name="converter"
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon name="swap-horizontal-outline" focused={focused} label="CONVERTER" />
+            <TabIcon name="swap-horizontal-outline" focused={focused}  />
           ),
         }}
       />
@@ -53,21 +52,23 @@ export default function TabLayout() {
         name="notes"
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon name="document-text-outline" focused={focused} label="NOTES" />
+            <TabIcon name="document-text-outline" focused={focused}  />
           ),
         }}
       />
     </Tabs>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: Colors.bg },
   tabBar: {
     backgroundColor: Colors.surface,
     borderTopColor: Colors.border,
     borderTopWidth: 1,
-    height: 64,
-    paddingBottom: 8,
+    height: 85,
+    paddingBottom: 12,
     paddingTop: 8,
   },
   tabItem: {
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   tabLabel: {
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.8,
     color: Colors.textMuted,

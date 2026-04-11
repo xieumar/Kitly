@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Pressable,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Animated, {
@@ -167,13 +167,15 @@ function RecentActivity() {
   return (
     <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.activityCard}>
       <Text style={styles.sectionLabel}>RECENT ACTIVITY</Text>
-      {ACTIVITY_ITEMS.map((item) => (
-        <View key={item.id} style={styles.activityRow}>
-          <View style={styles.activityDot} />
-          <Text style={styles.activityText}>{item.text}</Text>
-          <Text style={styles.activityTime}>{item.time}</Text>
-        </View>
-      ))}
+      {React.Children.toArray(
+        ACTIVITY_ITEMS.map((item) => (
+          <View style={styles.activityRow}>
+            <View style={styles.activityDot} />
+            <Text style={styles.activityText}>{item.text}</Text>
+            <Text style={styles.activityTime}>{item.time}</Text>
+          </View>
+        ))
+      )}
       <TouchableOpacity style={styles.auditLink} activeOpacity={0.7}>
         <Text style={styles.auditLinkText}>VIEW AUDIT LOG</Text>
         <Ionicons name="chevron-forward" size={12} color={Colors.accent} />
@@ -212,7 +214,8 @@ export default function HomeScreen() {
   const router = useRouter();
 
   return (
-    <ScrollView
+     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
@@ -257,12 +260,14 @@ export default function HomeScreen() {
       <SystemReliability />
       <View style={{ height: 24 }} />
     </ScrollView>
+     </SafeAreaView>
+    
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  content: { padding: 20, paddingTop: 56 },
+  content: { padding: 20, paddingTop: 16 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -5,10 +5,10 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Colors } from '@/src/constants/colors';
 import { NOTES, Note } from '@/src/constants/mockData';
@@ -70,18 +70,20 @@ function ChecklistNoteCard({ note }: { note: Note }) {
     <View style={styles.noteCard}>
       {note.tag && <Text style={styles.noteTag}>{note.tag}</Text>}
       <Text style={styles.noteTitle}>{note.title}</Text>
-      {note.checklistItems?.map((item, i) => (
-        <View key={i} style={styles.checkRow}>
-          {item.done ? (
-            <Ionicons name="checkmark-circle" size={16} color={Colors.accent} />
-          ) : (
-            <View style={styles.checkCircleEmpty} />
-          )}
-          <Text style={[styles.checkLabel, item.done && styles.checkLabelDone]}>
-            {item.label}
-          </Text>
-        </View>
-      ))}
+      {React.Children.toArray(
+        note.checklistItems?.map((item) => (
+          <View style={styles.checkRow}>
+            {item.done ? (
+              <Ionicons name="checkmark-circle" size={16} color={Colors.accent} />
+            ) : (
+              <View style={styles.checkCircleEmpty} />
+            )}
+            <Text style={[styles.checkLabel, item.done && styles.checkLabelDone]}>
+              {item.label}
+            </Text>
+          </View>
+        )) ?? []
+      )}
     </View>
   );
 }
@@ -137,7 +139,8 @@ export default function NotesScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
           <View>
@@ -162,18 +165,19 @@ export default function NotesScreen() {
 
         <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.filterRow}>
           <Ionicons name="filter-outline" size={14} color={Colors.textSecondary} />
-          {FILTERS.map((f) => (
-            <TouchableOpacity
-              key={f}
-              style={[styles.filterBtn, activeFilter === f && styles.filterBtnActive]}
-              onPress={() => setActiveFilter(f)}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.filterText, activeFilter === f && styles.filterTextActive]}>
-                {f}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {React.Children.toArray(
+            FILTERS.map((f) => (
+              <TouchableOpacity
+                style={[styles.filterBtn, activeFilter === f && styles.filterBtnActive]}
+                onPress={() => setActiveFilter(f)}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.filterText, activeFilter === f && styles.filterTextActive]}>
+                  {f}
+                </Text>
+              </TouchableOpacity>
+            ))
+          )}
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(120).duration(400)} style={styles.syncRow}>
@@ -181,14 +185,15 @@ export default function NotesScreen() {
           <Text style={styles.syncTime}>02:44 PM</Text>
         </Animated.View>
 
-        {filteredNotes.map((note, i) => (
-          <Animated.View
-            key={note.id}
-            entering={FadeInDown.delay(150 + i * 60).duration(400)}
-          >
-            <NoteCardRenderer note={note} onPress={() => handleNotePress(note)} />
-          </Animated.View>
-        ))}
+        {React.Children.toArray(
+          filteredNotes.map((note, i) => (
+            <Animated.View
+              entering={FadeInDown.delay(150 + i * 60).duration(400)}
+            >
+              <NoteCardRenderer note={note} onPress={() => handleNotePress(note)} />
+            </Animated.View>
+          ))
+        )}
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -201,12 +206,14 @@ export default function NotesScreen() {
         <Ionicons name="add" size={28} color={Colors.bg} />
       </TouchableOpacity>
     </View>
+    </SafeAreaView>
+    
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  content: { padding: 20, paddingTop: 56 },
+  content: { padding: 20, paddingTop: 16 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
