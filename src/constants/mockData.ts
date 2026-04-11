@@ -19,52 +19,7 @@ export interface LinkedProject {
   icon: string;
 }
 
-export const NOTES: Note[] = [
-  {
-    id: '1',
-    tag: 'PRECISION_SPEC',
-    title: 'CNC Milling Parameters for Grade 5 Titanium Alloy',
-    preview:
-      'Optimization of spindle speed and feed rates for reduced tool wear during high-volume production cycles. Preliminary tests indicate a 15% increase in lifespan...',
-    type: 'technical',
-    progress: 55,
-  },
-  {
-    id: '2',
-    title: 'Chassis Integrity Check',
-    preview:
-      'Inspection of weld points on the X-Series prototype. Minor stress fractures detected...',
-    type: 'visual',
-    hasImage: true,
-  },
-  {
-    id: '3',
-    title: 'Supply Chain Protocol',
-    preview:
-      'New directive for procurement of rare earth magnets from verified industrial vendors only. Compliance required by Q3.',
-    type: 'simple',
-    timeAgo: '3h ago',
-  },
-  {
-    id: '4',
-    tag: 'UNCATEGORIZED',
-    title: 'Maintenance Schedule',
-    type: 'checklist',
-    preview: '',
-    checklistItems: [
-      { label: 'Coolant replacement', done: true },
-      { label: 'Laser alignment check', done: false },
-    ],
-  },
-  {
-    id: '5',
-    tag: 'SENSOR DATA LOG',
-    title: 'Thermodynamic Variance in Reactor Shell C',
-    preview:
-      'Log entries recorded during peak operational hours. Heat dissipation is within safety margins but trending upward.',
-    type: 'sensor',
-  },
-];
+export const NOTES: Note[] = [];
 
 export const LINKED_PROJECTS: LinkedProject[] = [
   {

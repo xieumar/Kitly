@@ -1,32 +1,41 @@
 import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 import { Colors } from "@/src/constants/colors";
-import { NOTES, Note } from "@/src/constants/mockData";
+import { Note } from "@/src/constants/mockData";
+import { useNotes } from "@/src/context/NotesContext";
 
 import NotesHeader from "@/components/notes/NotesHeader";
 import FilterTabs from "@/components/notes/FilterTabs";
 import NoteCardRenderer from "@/components/notes/NoteCardRenderer";
 import NotesFAB from "@/components/notes/NotesFAB";
+import AddNoteModal from "@/components/notes/AddNoteModal";
 
 type FilterKey = "ALL" | "TECHNICAL" | "DRAFTS";
 const FILTERS: FilterKey[] = ["ALL", "TECHNICAL", "DRAFTS"];
 
 export default function NotesScreen() {
   const router = useRouter();
+  const { notes, addNote } = useNotes();
   const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  const filteredNotes = NOTES.filter((n) => {
+  const filteredNotes = notes.filter((n) => {
     if (activeFilter === "TECHNICAL") return n.type === "technical" || n.type === "sensor";
     if (activeFilter === "DRAFTS") return n.type === "simple";
     return true;
   });
 
   const handleNotePress = (note: Note) => {
-    router.push({ pathname: "/note-detail" as any, params: { id: note.id } });
+    router.push({
+      pathname: "/note-detail" as any,
+      params: { id: note.id, noteJson: JSON.stringify(note) },
+    });
   };
 
   return (
@@ -35,7 +44,7 @@ export default function NotesScreen() {
         <ScrollView contentContainerStyle={{ padding: 20 }}>
 
           <Animated.View entering={FadeIn.duration(300)}>
-            <NotesHeader noteCount={NOTES.length} />
+            <NotesHeader noteCount={notes.length} />
           </Animated.View>
 
           <Animated.View entering={FadeInDown.delay(50)}>
@@ -46,26 +55,73 @@ export default function NotesScreen() {
             />
           </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(100)}>
-            {filteredNotes.map((note, i) => (
-              <Animated.View key={note.id} entering={FadeInDown.delay(120 + i * 60)}>
-                <NoteCardRenderer
-                  note={note}
-                  onPress={() => handleNotePress(note)}
-                />
-              </Animated.View>
-            ))}
-          </Animated.View>
+          {filteredNotes.length === 0 ? (
+            <Animated.View entering={FadeInDown.delay(100)} style={styles.emptyState}>
+              <View style={styles.emptyIcon}>
+                <Ionicons name="document-outline" size={32} color={Colors.textMuted} />
+              </View>
+              <Text style={styles.emptyTitle}>No notes yet</Text>
+              <Text style={styles.emptySubtitle}>
+                {activeFilter === "ALL"
+                  ? "Tap the + button to create your first note."
+                  : `No ${activeFilter.toLowerCase()} notes found. Try a different filter.`}
+              </Text>
+            </Animated.View>
+          ) : (
+            <Animated.View entering={FadeInDown.delay(100)}>
+              {filteredNotes.map((note, i) => (
+                <Animated.View key={note.id} entering={FadeInDown.delay(120 + i * 60)}>
+                  <NoteCardRenderer
+                    note={note}
+                    onPress={() => handleNotePress(note)}
+                  />
+                </Animated.View>
+              ))}
+            </Animated.View>
+          )}
 
           <View style={{ height: 100 }} />
         </ScrollView>
 
-        <NotesFAB
-          onPress={() =>
-            router.push({ pathname: "/note-detail" as any, params: { id: "new" } })
-          }
+        <NotesFAB onPress={() => setShowAddModal(true)} />
+
+        <AddNoteModal
+          visible={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onSave={addNote}
         />
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 64,
+    gap: 12,
+  },
+  emptyIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
+  emptyTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: Colors.textPrimary,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: Colors.textMuted,
+    textAlign: "center",
+    maxWidth: 260,
+    lineHeight: 20,
+  },
+});

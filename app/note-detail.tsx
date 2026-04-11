@@ -13,9 +13,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Colors } from '@/src/constants/colors';
-import { NOTES, LINKED_PROJECTS } from '@/src/constants/mockData';
+import { Note, NoteType } from '@/src/constants/mockData';
+import { useNotes } from '@/src/context/NotesContext';
 
-
+const TYPE_LABELS: Record<NoteType, string> = {
+  simple: 'NOTE',
+  technical: 'TECHNICAL',
+  checklist: 'CHECKLIST',
+  sensor: 'SENSOR LOG',
+  visual: 'VISUAL',
+};
 
 type FormatButtonProps = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -35,57 +42,49 @@ function FormatButton({ icon, onPress, active }: FormatButtonProps) {
   );
 }
 
-type LinkedProjectCardProps = {
-  name: string;
-  subtitle: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  hasAccent?: boolean;
-};
-
-function LinkedProjectCard({ name, subtitle, icon, hasAccent }: LinkedProjectCardProps) {
-  return (
-    <View style={[styles.linkedProject, hasAccent && styles.linkedProjectAccent]}>
-      {hasAccent && <View style={styles.linkedProjectBar} />}
-      <View style={styles.linkedProjectIcon}>
-        <Ionicons name={icon} size={14} color={hasAccent ? Colors.accent : Colors.textSecondary} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.linkedProjectName}>{name}</Text>
-        <Text style={styles.linkedProjectSub}>{subtitle}</Text>
-      </View>
-      <Ionicons name="chevron-forward" size={14} color={Colors.textMuted} />
-    </View>
-  );
-}
-
 export default function NoteDetailScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const isNew = id === 'new';
+  const { updateNote, deleteNote } = useNotes();
+  const { noteJson } = useLocalSearchParams<{ noteJson: string }>();
 
-  const existingNote = NOTES.find((n) => n.id === id);
+  const existingNote: Note | null = noteJson ? JSON.parse(noteJson) : null;
 
-  const [title, setTitle] = useState(isNew ? '' : existingNote?.title ?? '');
-  const [body, setBody] = useState(
-    isNew ? '' : existingNote?.preview ?? ''
-  );
-  const [wordCount] = useState(isNew ? 0 : 1240);
+  const [title, setTitle] = useState(existingNote?.title ?? '');
+  const [body, setBody] = useState(existingNote?.preview ?? '');
+
+  const noteType = existingNote?.type ?? 'simple';
+  const typeLabel = TYPE_LABELS[noteType];
+
+  const wordCount = body.trim()
+    ? body.trim().split(/\s+/).filter(Boolean).length
+    : 0;
 
   const handleSave = () => {
-    Alert.alert('Saved', 'Specification saved successfully.');
-  };
-
-  const handleArchive = () => {
-    Alert.alert('Archive', 'This note will be archived.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Archive', onPress: () => router.back() },
+    if (!existingNote) return;
+    const updated: Note = {
+      ...existingNote,
+      title: title.trim() || existingNote.title,
+      preview: body.trim(),
+      timeAgo: 'just now',
+    };
+    updateNote(updated);
+    Alert.alert('Saved', 'Note saved successfully.', [
+      { text: 'OK', onPress: () => router.back() },
     ]);
   };
 
   const handleDelete = () => {
-    Alert.alert('Permanent Delete', 'This action cannot be undone.', [
+    if (!existingNote) return;
+    Alert.alert('Delete Note', 'This action cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => router.back() },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          deleteNote(existingNote.id);
+          router.back();
+        },
+      },
     ]);
   };
 
@@ -110,7 +109,13 @@ export default function NoteDetailScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Animated.View entering={FadeInDown.delay(50).duration(400)}>
+        <Animated.View entering={FadeInDown.delay(40).duration(400)}>
+          <View style={styles.typeBadge}>
+            <Text style={styles.typeBadgeText}>{typeLabel}</Text>
+          </View>
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.delay(80).duration(400)}>
           <Text style={styles.fieldLabel}>DOCUMENT TITLE</Text>
           <TextInput
             style={styles.titleInput}
@@ -122,7 +127,7 @@ export default function NoteDetailScreen() {
           />
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.toolbarRow}>
+        <Animated.View entering={FadeInDown.delay(120).duration(400)} style={styles.toolbarRow}>
           <FormatButton icon="text" onPress={() => {}} active />
           <FormatButton icon="pencil-outline" onPress={() => {}} />
           <FormatButton icon="list-outline" onPress={() => {}} />
@@ -131,12 +136,12 @@ export default function NoteDetailScreen() {
           <FormatButton icon="image-outline" onPress={() => {}} />
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(150).duration(400)}>
+        <Animated.View entering={FadeInDown.delay(160).duration(400)}>
           <TextInput
             style={styles.bodyInput}
             value={body}
             onChangeText={setBody}
-            placeholder="Start writing technical specs..."
+            placeholder="Start writing..."
             placeholderTextColor={Colors.textMuted}
             multiline
             textAlignVertical="top"
@@ -146,15 +151,15 @@ export default function NoteDetailScreen() {
         <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.propertiesCard}>
           <Text style={styles.propertiesTitle}>Properties</Text>
           <View style={styles.propertyRow}>
-            <Text style={styles.propertyKey}>Status</Text>
+            <Text style={styles.propertyKey}>Type</Text>
             <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>DRAFTING</Text>
+              <Text style={styles.statusText}>{typeLabel}</Text>
             </View>
           </View>
           <View style={styles.divider} />
           <View style={styles.propertyRow}>
             <Text style={styles.propertyKey}>Modified</Text>
-            <Text style={styles.propertyValue}>Oct 24, 2023</Text>
+            <Text style={styles.propertyValue}>{existingNote?.timeAgo ?? '—'}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.propertyRow}>
@@ -164,38 +169,13 @@ export default function NoteDetailScreen() {
 
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave} activeOpacity={0.85}>
             <Ionicons name="save-outline" size={16} color={Colors.bg} />
-            <Text style={styles.saveBtnText}>SAVE SPECIFICATION</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.archiveBtn} onPress={handleArchive} activeOpacity={0.8}>
-            <Ionicons name="archive-outline" size={14} color={Colors.textSecondary} />
-            <Text style={styles.archiveBtnText}>ARCHIVE TOOL</Text>
+            <Text style={styles.saveBtnText}>SAVE NOTE</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete} activeOpacity={0.8}>
             <Ionicons name="trash-outline" size={14} color={Colors.danger} />
-            <Text style={styles.deleteBtnText}>PERMANENT DELETE</Text>
+            <Text style={styles.deleteBtnText}>DELETE NOTE</Text>
           </TouchableOpacity>
-        </Animated.View>
-
-        <Animated.View entering={FadeInDown.delay(260).duration(400)} style={styles.visualRefSection}>
-          <Text style={styles.visualRefTitle}>TECHINIRAL</Text>
-          <Text style={styles.visualRefLabel}>VISUAL REFERENCE</Text>
-          <Text style={styles.visualRefFile}>CNC_COMP_01.JPG</Text>
-        </Animated.View>
-
-        <Animated.View entering={FadeInDown.delay(310).duration(400)} style={styles.linkedCard}>
-          <Text style={styles.linkedTitle}>Linked Projects</Text>
-          {React.Children.toArray(
-            LINKED_PROJECTS.map((project, i) => (
-              <LinkedProjectCard
-                name={project.name}
-                subtitle={project.subtitle}
-                icon={project.icon as keyof typeof Ionicons.glyphMap}
-                hasAccent={i === 0}
-              />
-            ))
-          )}
         </Animated.View>
 
         <View style={{ height: 40 }} />
@@ -211,7 +191,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 0,
     paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
@@ -245,6 +224,22 @@ const styles = StyleSheet.create({
   },
   scrollView: { flex: 1 },
   content: { padding: 20 },
+  typeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.accentDim,
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 14,
+  },
+  typeBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 1,
+    color: Colors.accent,
+  },
   fieldLabel: {
     fontSize: 9,
     fontWeight: '700',
@@ -350,24 +345,6 @@ const styles = StyleSheet.create({
     color: Colors.bg,
     letterSpacing: 1,
   },
-  archiveBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    paddingVertical: 13,
-    marginBottom: 10,
-  },
-  archiveBtnText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Colors.textSecondary,
-    letterSpacing: 1,
-  },
   deleteBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -384,91 +361,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.danger,
     letterSpacing: 1,
-  },
-  visualRefSection: {
-    marginBottom: 20,
-    padding: 16,
-    backgroundColor: Colors.card,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  visualRefTitle: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: Colors.textMuted,
-    opacity: 0.15,
-    letterSpacing: 4,
-    marginBottom: 12,
-  },
-  visualRefLabel: {
-    fontSize: 8,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    color: Colors.textMuted,
-    marginBottom: 4,
-  },
-  visualRefFile: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.textSecondary,
-  },
-  linkedCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    padding: 18,
-  },
-  linkedTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginBottom: 14,
-  },
-  linkedProject: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: Colors.surface,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    padding: 12,
-    marginBottom: 8,
-    overflow: 'hidden',
-  },
-  linkedProjectAccent: {
-    borderColor: Colors.accentBorder,
-    backgroundColor: Colors.accentDim,
-  },
-  linkedProjectBar: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 3,
-    backgroundColor: Colors.accent,
-    borderRadius: 2,
-  },
-  linkedProjectIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 8,
-    backgroundColor: Colors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  linkedProjectName: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginBottom: 2,
-  },
-  linkedProjectSub: {
-    fontSize: 9,
-    fontWeight: '600',
-    letterSpacing: 1,
-    color: Colors.textMuted,
   },
 });
