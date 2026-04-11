@@ -28,7 +28,7 @@ const CurrencyPicker = ({ visible, selected, onSelect, onClose }: Props) => {
 
           <FlatList
             data={CURRENCIES}
-            keyExtractor={(item) => item} // ✅ GOOD
+            keyExtractor={(item) => item}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={[styles.row, item === selected && styles.active]}
@@ -37,9 +37,13 @@ const CurrencyPicker = ({ visible, selected, onSelect, onClose }: Props) => {
                   onClose();
                 }}
               >
-                <Text>{CURRENCY_FLAGS[item]}</Text>
+                <Text style={styles.flag}>{CURRENCY_FLAGS[item]}</Text>
+
                 <Text style={styles.currency}>{item}</Text>
-                {item === selected && <Ionicons name="checkmark" size={16} />}
+
+                {item === selected && (
+                  <Ionicons name="checkmark" size={16} color={Colors.accent} />
+                )}
               </TouchableOpacity>
             )}
           />
@@ -52,15 +56,41 @@ const CurrencyPicker = ({ visible, selected, onSelect, onClose }: Props) => {
 export default CurrencyPicker;
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, justifyContent: "flex-end", backgroundColor: Colors.overlay },
+  overlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: Colors.overlay,
+  },
   sheet: {
     backgroundColor: Colors.surface,
     padding: 20,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    maxHeight: "60%",
   },
-  title: { fontSize: 16, fontWeight: "700", marginBottom: 12 },
-  row: { flexDirection: "row", gap: 12, paddingVertical: 12 },
-  active: { backgroundColor: Colors.accentDim },
-  currency: { flex: 1 },
+  title: {
+    fontSize: 16,
+    fontWeight: "800",
+    marginBottom: 12,
+    color: Colors.textPrimary,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 14,
+  },
+  active: {
+    backgroundColor: Colors.accentDim,
+    borderRadius: 10,
+  },
+  flag: {
+    fontSize: 18,
+  },
+  currency: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: "700",
+    color: Colors.textPrimary,
+  },
 });

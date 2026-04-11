@@ -3,10 +3,12 @@ import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
+
 import { Colors } from "@/src/constants/colors";
 import {
   EXCHANGE_RATES,
 } from "@/src/constants/mockData";
+
 
 import Header from "@/components/converter/Header";
 import CategoryTabs from "@/components/converter/CategoryTabs";
@@ -14,7 +16,9 @@ import ConverterCard from "@/components/converter/ConverterCard";
 import CurrencyPicker from "@/components/converter/CurrencyPicker";
 import ComparisonRow from "@/components/converter/ComparisonRow";
 
+
 type ConversionCategory = "Length" | "Temp" | "Weight" | "Currency";
+
 
 const CATEGORIES = [
   { key: "Length", icon: "resize-outline" },
@@ -23,16 +27,20 @@ const CATEGORIES = [
   { key: "Currency", icon: "card-outline" },
 ] as const;
 
+
 export default function ConverterScreen() {
   const [activeCategory, setActiveCategory] =
     useState<ConversionCategory>("Currency");
+
 
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("EUR");
   const [inputAmount, setInputAmount] = useState("1250");
 
+
   const [showFromPicker, setShowFromPicker] = useState(false);
   const [showToPicker, setShowToPicker] = useState(false);
+
 
   const convertedAmount = useCallback(() => {
     const num = parseFloat(inputAmount) || 0;
@@ -40,14 +48,17 @@ export default function ConverterScreen() {
     return (inUSD * EXCHANGE_RATES[toCurrency]).toFixed(2);
   }, [inputAmount, fromCurrency, toCurrency]);
 
+
   const rate = (
     EXCHANGE_RATES[toCurrency] / EXCHANGE_RATES[fromCurrency]
   ).toFixed(4);
+
 
   const swapCurrencies = () => {
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
   };
+
 
   const comparisons = ["GBP", "JPY", "CHF"].map((c) => {
     const num = parseFloat(inputAmount) || 0;
@@ -55,6 +66,7 @@ export default function ConverterScreen() {
     const converted = inUSD * EXCHANGE_RATES[c];
     return { currency: c, amount: converted };
   });
+
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
@@ -87,7 +99,7 @@ export default function ConverterScreen() {
             <Animated.View entering={FadeInUp.delay(200)}>
               {comparisons.map((c, i) => (
                 <ComparisonRow
-                  key={c.currency} 
+                  key={c.currency}
                   currency={c.currency}
                   amount={c.amount}
                   change={

@@ -39,6 +39,7 @@ export default function HomeScreen() {
               letterSpacing: 1.5,
               color: Colors.accent,
               marginBottom: 6,
+              marginTop: 4,
             }}
           >
             SYSTEM STATUS: OPTIMAL
