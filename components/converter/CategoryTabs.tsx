@@ -19,10 +19,13 @@ type Props = {
 
 const CategoryTabs = ({ categories, active, onChange }: Props) => {
   return (
-    <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.row}>
+    <Animated.View
+      entering={FadeInDown.delay(100).duration(400)}
+      style={styles.row}
+    >
       {categories.map(({ key, icon }) => (
         <TouchableOpacity
-          key={key} 
+          key={key}
           style={[styles.btn, active === key && styles.active]}
           onPress={() => onChange(key)}
           activeOpacity={0.8}
@@ -32,7 +35,10 @@ const CategoryTabs = ({ categories, active, onChange }: Props) => {
             size={14}
             color={active === key ? Colors.bg : Colors.textSecondary}
           />
-          <Text style={[styles.text, active === key && styles.textActive]}>
+
+          <Text
+            style={[styles.text, active === key && styles.textActive]}
+          >
             {key.toUpperCase()}
           </Text>
         </TouchableOpacity>
@@ -71,5 +77,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     color: Colors.textSecondary,
   },
-  textActive: { color: Colors.bg },
+  textActive: {
+    color: Colors.bg,
+  },
 });
