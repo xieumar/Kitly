@@ -6,7 +6,7 @@ import { Colors } from "@/src/constants/colors";
 export default function KitlyLogo() {
   return (
     <View style={styles.logoRow}>
-      <Ionicons name="flash" size={18} color={Colors.accent} />
+      <Ionicons name="flash" size={24} color={Colors.accent} />
       <Text style={styles.logoText}>KITLY</Text>
     </View>
   );
@@ -15,7 +15,7 @@ export default function KitlyLogo() {
 const styles = StyleSheet.create({
   logoRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   logoText: {
-    fontSize: 15,
+    fontSize: 20,
     fontWeight: "800",
     letterSpacing: 2,
     color: Colors.textPrimary,

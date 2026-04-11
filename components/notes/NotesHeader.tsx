@@ -1,32 +1,39 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { Colors } from "@/src/constants/colors";
 
-type Props = {
-  noteCount: number;
-};
 
-export default function NotesHeader({ noteCount }: Props) {
+export default function NotesHeader() {
   return (
-    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 16 }}>
-      <View>
-        <Text style={{ fontSize: 9, color: Colors.textMuted, fontWeight: "700" }}>
-          SYSTEM:1009_V4.0
-        </Text>
-        <Text style={{ fontSize: 9, color: Colors.textSecondary, fontWeight: "700" }}>
-          {noteCount * 8 + 1} ACTIVE RECORDS
-        </Text>
+    <Animated.View entering={FadeIn.duration(300)} style={styles.container}>
+      <View style={styles.logoRow}>
+        <Ionicons name="flash" size={22} color={Colors.accent} />
+        <Text style={styles.logoText}>KITLY</Text>
       </View>
-
-      <View style={{ flexDirection: "row", gap: 8 }}>
-        <TouchableOpacity>
-          <Ionicons name="search-outline" size={18} color={Colors.textSecondary} />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons name="settings-outline" size={18} color={Colors.textSecondary} />
-        </TouchableOpacity>
-      </View>
-    </View>
+    </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 20,
+  },
+
+  logoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 14,
+  },
+
+  logoText: {
+    fontSize: 20,
+    fontWeight: "800",
+    letterSpacing: 2,
+    color: Colors.textPrimary,
+  },
+
+  
+});
