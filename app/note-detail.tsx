@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TextInput,
   Alert,
+  Animated as RNAnimated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -59,6 +60,23 @@ export default function NoteDetailScreen() {
     ? body.trim().split(/\s+/).filter(Boolean).length
     : 0;
 
+  const toastAnim = useRef(new RNAnimated.Value(0)).current;
+  const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [toastMsg, setToastMsg] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'danger'>('success');
+
+  const showToast = (msg: string, type: 'success' | 'danger' = 'success') => {
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    setToastMsg(msg);
+    setToastType(type);
+    RNAnimated.spring(toastAnim, { toValue: 1, useNativeDriver: true, speed: 20 }).start();
+    toastTimeout.current = setTimeout(() => {
+      RNAnimated.timing(toastAnim, { toValue: 0, duration: 300, useNativeDriver: true }).start();
+    }, 2000);
+  };
+
+  useEffect(() => () => { if (toastTimeout.current) clearTimeout(toastTimeout.current); }, []);
+
   const handleSave = () => {
     if (!existingNote) return;
     const updated: Note = {
@@ -68,9 +86,7 @@ export default function NoteDetailScreen() {
       timeAgo: 'just now',
     };
     updateNote(updated);
-    Alert.alert('Saved', 'Note saved successfully.', [
-      { text: 'OK', onPress: () => router.back() },
-    ]);
+    router.back();
   };
 
   const handleDelete = () => {
@@ -90,6 +106,27 @@ export default function NoteDetailScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <RNAnimated.View
+        pointerEvents="none"
+        style={[
+          styles.toast,
+          toastType === 'danger' ? styles.toastDanger : styles.toastSuccess,
+          {
+            opacity: toastAnim,
+            transform: [{ translateY: toastAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+          },
+        ]}
+      >
+        <Ionicons
+          name={toastType === 'danger' ? 'alert-circle' : 'checkmark-circle'}
+          size={16}
+          color={toastType === 'danger' ? Colors.danger : Colors.accent}
+        />
+        <Text style={[styles.toastText, toastType === 'danger' ? { color: Colors.danger } : { color: Colors.accent }]}>
+          {toastMsg}
+        </Text>
+      </RNAnimated.View>
+
       <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
           <Ionicons name="arrow-back" size={20} color={Colors.textSecondary} />
@@ -361,5 +398,32 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.danger,
     letterSpacing: 1,
+  },
+  toast: {
+    position: 'absolute',
+    bottom: 40,
+    left: 24,
+    right: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    zIndex: 999,
+  },
+  toastSuccess: {
+    backgroundColor: Colors.accentDim,
+    borderColor: Colors.accentBorder,
+  },
+  toastDanger: {
+    backgroundColor: Colors.dangerDim,
+    borderColor: 'rgba(255,59,71,0.3)',
+  },
+  toastText: {
+    fontSize: 13,
+    fontWeight: '700',
+    flex: 1,
   },
 });

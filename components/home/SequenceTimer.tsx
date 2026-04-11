@@ -1,26 +1,32 @@
+import { Colors } from "@/src/constants/colors";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  withSequence,
   FadeInDown,
   cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
 } from "react-native-reanimated";
-import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/src/constants/colors";
 
 type TimerState = "idle" | "running" | "paused" | "stopped";
 
 export default function SequenceTimer() {
   const [elapsed, setElapsed] = useState(0);
   const [timerState, setTimerState] = useState<TimerState>("idle");
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const isRunning = timerState === "running";
+  const isStopped = timerState === "stopped";
+  const isIdle = timerState === "idle";
 
   const startTicking = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
+
     intervalRef.current = setInterval(() => {
       setElapsed((s) => s + 1);
     }, 1000);
@@ -64,13 +70,15 @@ export default function SequenceTimer() {
 
   const display =
     h > 0
-      ? `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+      ? `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(
+        s
+      ).padStart(2, "0")}`
       : `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 
   const pulse = useSharedValue(1);
 
   useEffect(() => {
-    if (timerState === "running") {
+    if (isRunning) {
       pulse.value = withRepeat(
         withSequence(
           withTiming(1.06, { duration: 800 }),
@@ -82,47 +90,44 @@ export default function SequenceTimer() {
       cancelAnimation(pulse);
       pulse.value = withTiming(1, { duration: 300 });
     }
-  }, [timerState]);
+  }, [isRunning]);
 
   const pulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulse.value }],
   }));
 
-  const isRunning = timerState === "running";
-  const isStopped = timerState === "stopped";
-  const isIdle = timerState === "idle";
-
   const circleBorderColor = isStopped
     ? Colors.danger + "66"
     : isRunning
-    ? Colors.accentBorder
-    : Colors.border;
+      ? Colors.accentBorder
+      : Colors.border;
 
   const circleBg = isStopped
     ? Colors.dangerDim
     : isRunning
-    ? Colors.accentDim
-    : "transparent";
+      ? Colors.accentDim
+      : "transparent";
 
   const statusDotColor = isRunning
     ? Colors.accent
     : isStopped
-    ? Colors.danger
-    : Colors.textMuted;
+      ? Colors.danger
+      : Colors.textMuted;
 
   const statusLabel = isRunning
     ? "RUNNING"
     : timerState === "paused"
-    ? "PAUSED"
-    : isStopped
-    ? "STOPPED"
-    : "READY";
+      ? "PAUSED"
+      : isStopped
+        ? "STOPPED"
+        : "READY";
 
   return (
     <Animated.View entering={FadeInDown.delay(300)} style={styles.card}>
       <View style={styles.header}>
         <Ionicons name="timer-outline" size={14} color={Colors.accent} />
         <Text style={styles.label}>SEQUENCE TIMER</Text>
+
         <View style={styles.statusBadge}>
           <View style={[styles.statusDot, { backgroundColor: statusDotColor }]} />
           <Text style={[styles.statusText, { color: statusDotColor }]}>
@@ -139,9 +144,13 @@ export default function SequenceTimer() {
         ]}
       >
         <Text style={styles.value}>{display}</Text>
+
         {!isIdle && (
-          <Text style={styles.unit}>{h > 0 ? "h : m : s" : "min : sec"}</Text>
+          <Text style={styles.unit}>
+            {h > 0 ? "h : m : s" : "min : sec"}
+          </Text>
         )}
+
         {isIdle && <Text style={styles.idleHint}>tap start</Text>}
       </Animated.View>
 
@@ -162,7 +171,10 @@ export default function SequenceTimer() {
             color={isStopped ? Colors.textMuted : Colors.bg}
           />
           <Text
-            style={[styles.primaryBtnText, isStopped && { color: Colors.textMuted }]}
+            style={[
+              styles.primaryBtnText,
+              isStopped && { color: Colors.textMuted },
+            ]}
           >
             {isRunning ? "PAUSE" : isIdle ? "START" : "RESUME"}
           </Text>
@@ -195,7 +207,6 @@ export default function SequenceTimer() {
     </Animated.View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,

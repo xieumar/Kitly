@@ -3,7 +3,6 @@ import { StyleSheet, View, Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/src/constants/colors';
-import { NotesProvider } from '@/src/context/NotesContext';
 
 type TabIconProps = {
   name: keyof typeof Ionicons.glyphMap;
@@ -25,42 +24,40 @@ function TabIcon({ name, focused }: TabIconProps) {
 
 export default function TabLayout() {
   return (
-    <NotesProvider>
-      <SafeAreaProvider>
-        <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: styles.tabBar,
-          tabBarShowLabel: false,
+    <SafeAreaProvider>
+      <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: styles.tabBar,
+        tabBarShowLabel: false,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon name="home-outline" focused={focused}  />
+          ),
         }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <TabIcon name="home-outline" focused={focused}  />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="converter"
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <TabIcon name="swap-horizontal-outline" focused={focused}  />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="notes"
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <TabIcon name="document-text-outline" focused={focused}  />
-            ),
-          }}
-        />
-      </Tabs>
-      </SafeAreaProvider>
-    </NotesProvider>
+      />
+      <Tabs.Screen
+        name="converter"
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon name="swap-horizontal-outline" focused={focused}  />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="notes"
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon name="document-text-outline" focused={focused}  />
+          ),
+        }}
+      />
+    </Tabs>
+    </SafeAreaProvider>
   );
 }
 
