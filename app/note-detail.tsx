@@ -133,9 +133,6 @@ export default function NoteDetailScreen() {
           <Ionicons name="flash" size={16} color={Colors.accent} />
           <Text style={styles.logoText}>KITLY</Text>
         </View>
-        <TouchableOpacity style={styles.headerIconBtn} activeOpacity={0.7}>
-          <Ionicons name="share-outline" size={18} color={Colors.textSecondary} />
-        </TouchableOpacity>
       </Animated.View>
 
       <ScrollView
