@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Alert,
   Animated as RNAnimated,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -64,6 +64,7 @@ export default function NoteDetailScreen() {
   const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [toastMsg, setToastMsg] = useState('');
   const [toastType, setToastType] = useState<'success' | 'danger'>('success');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const showToast = (msg: string, type: 'success' | 'danger' = 'success') => {
     if (toastTimeout.current) clearTimeout(toastTimeout.current);
@@ -91,17 +92,14 @@ export default function NoteDetailScreen() {
 
   const handleDelete = () => {
     if (!existingNote) return;
-    Alert.alert('Delete Note', 'This action cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          deleteNote(existingNote.id);
-          router.back();
-        },
-      },
-    ]);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (!existingNote) return;
+    deleteNote(existingNote.id);
+    setShowDeleteModal(false);
+    router.back();
   };
 
   return (
@@ -164,14 +162,6 @@ export default function NoteDetailScreen() {
           />
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(120).duration(400)} style={styles.toolbarRow}>
-          <FormatButton icon="text" onPress={() => {}} active />
-          <FormatButton icon="pencil-outline" onPress={() => {}} />
-          <FormatButton icon="list-outline" onPress={() => {}} />
-          <FormatButton icon="code-slash-outline" onPress={() => {}} />
-          <FormatButton icon="chatbubble-ellipses-outline" onPress={() => {}} />
-          <FormatButton icon="image-outline" onPress={() => {}} />
-        </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(160).duration(400)}>
           <TextInput
@@ -217,6 +207,26 @@ export default function NoteDetailScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      <Modal visible={showDeleteModal} transparent animationType="fade" onRequestClose={() => setShowDeleteModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalIconBox}>
+              <Ionicons name="warning" size={24} color={Colors.danger} />
+            </View>
+            <Text style={styles.modalTitle}>Delete Note</Text>
+            <Text style={styles.modalMessage}>This action cannot be undone. Are you sure you want to permanently delete this note?</Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setShowDeleteModal(false)} activeOpacity={0.7}>
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalDeleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+                <Text style={styles.modalDeleteText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -425,5 +435,78 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     flex: 1,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: Colors.overlay,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    padding: 24,
+    width: '100%',
+    maxWidth: 340,
+    alignItems: 'center',
+  },
+  modalIconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.dangerDim,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,59,71,0.3)',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  modalCancelBtn: {
+    flex: 1,
+    backgroundColor: Colors.surface,
+    paddingVertical: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+  },
+  modalCancelText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+  },
+  modalDeleteBtn: {
+    flex: 1,
+    backgroundColor: Colors.danger,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalDeleteText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.bg,
   },
 });

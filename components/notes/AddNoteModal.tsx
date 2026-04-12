@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     borderWidth: 1,
     borderColor: Colors.border,
-    maxHeight: "85%",
+    height: "85%",
   },
   handle: {
     width: 40,
