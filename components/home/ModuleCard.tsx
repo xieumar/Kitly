@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { Colors } from "@/src/constants/colors";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 type Props = {
   title: string;
@@ -26,7 +26,7 @@ export default function ModuleCard({
           <Ionicons name={icon} size={20} color={Colors.accent} />
         </View>
 
-        
+
       </View>
 
       <Text style={styles.title}>{title}</Text>
@@ -37,9 +37,6 @@ export default function ModuleCard({
           <Text style={styles.btnText}>{primaryLabel}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.settings}>
-          <Ionicons name="settings-outline" size={16} color={Colors.textSecondary} />
-        </TouchableOpacity>
       </View>
     </Animated.View>
   );

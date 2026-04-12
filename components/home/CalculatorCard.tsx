@@ -216,7 +216,7 @@ export default function CalculatorCard() {
         </Text>
 
         <TouchableOpacity style={styles.btn} onPress={() => setOpen(true)}>
-          <Ionicons name="calculator" size={13} color={Colors.textSecondary} />
+          <Ionicons name="calculator" size={13} color={Colors.bg} />
           <Text style={styles.btnText}>OPEN CALCULATOR</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   btn: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.accent,
     borderRadius: 10,
     paddingVertical: 11,
     alignItems: "center",
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   btnText: {
     fontSize: 11,
     fontWeight: "700",
-    color: Colors.textSecondary,
+    color: Colors.bg,
   },
   overlay: {
     flex: 1,
