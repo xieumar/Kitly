@@ -1,50 +1,157 @@
-# Welcome to your Expo app 👋
+# Kitly 🚀
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Precision orchestration for your daily workflows.**
 
-## Get started
+Kitly is a mobile app that brings professional productivity tools to your fingertips. From real-time unit conversions to technical documentation, Kitly is engineered for precision and performance.
+
+## Features
+
+### 📊 Dashboard
+- Live system status 
+- Real-time clock
+- Quick access to all modules
+- System reliability monitoring *(coming soon)*
+- Recent activity tracking *(coming soon)*
+
+
+### 🔄 Unit Converter
+Convert between multiple unit systems instantly:
+- **Currency** - Track real-time exchange rates (USD, EUR, GBP, JPY, CHF, CAD, AUD, SGD)
+- **Length** - Meters, feet, kilometers, miles, and more
+- **Temperature** - Celsius to Fahrenheit conversions
+- **Weight** - Kilograms, pounds, grams, ounces, and more
+
+### 📝 Technical Notes
+A powerful note-taking system designed for engineers and developers:
+- **Simple Notes** - Quick thoughts and drafts
+- **Technical Notes** - Detailed documentation with formatting
+- **Checklists** - Track tasks and progress *(coming soon)*
+- **Sensor Logs** - Record technical measurements *(coming soon)*
+- **Visual Notes** - Embed images and diagrams *(coming soon)*
+- Filter by type and status
+- Full edit and delete capabilities
+
+### 🧮 Calculator
+Quick calculations on demand.
+
+### ⏱️ Sequence Timer
+Multi-step timer for workflows and processes.
+
+## Tech Stack
+
+- **Framework**: [Expo](https://expo.dev) + [React Native](https://reactnative.dev)
+- **Navigation**: [Expo Router](https://expo.github.io/router)
+- **Animations**: [React Native Reanimated](https://github.com/software-mansion/react-native-reanimated)
+- **UI Icons**: [@expo/vector-icons](https://docs.expo.dev/guides/icons)
+- **Language**: TypeScript
+- **State Management**: React Context API
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- Expo CLI: `npm install -g eas-cli`
+
+### Installation
 
 1. Install dependencies
-
    ```bash
    npm install
    ```
 
-2. Start the app
-
+2. Start the development server
    ```bash
-   npx expo start
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+3. Open the app:
+   - **iOS**: Press `i` or open [iOS Simulator](https://docs.expo.dev/workflow/ios-simulator/)
+   - **Android**: Press `a` or open [Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+   - **Web**: Press `w` for web preview
+   - **Expo Go**: Scan the QR code with [Expo Go](https://expo.dev/go)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Available Scripts
 
 ```bash
-npm run reset-project
+npm start          # Start development server
+npm run android    # Run on Android emulator
+npm run ios        # Run on iOS simulator
+npm run web        # Run in web browser
+npm run lint       # Run ESLint
+npm run reset-project  # Reset to blank app
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Project Structure
 
-## Learn more
+```
+kitly/
+├── app/                    # App screens and navigation
+│   ├── (tabs)/            # Tab-based main navigation
+│   │   ├── index.tsx      # Home dashboard
+│   │   ├── converter.tsx  # Unit converter
+│   │   └── notes.tsx      # Notes management
+│   ├── note-detail.tsx    # Note editor
+│   └── _layout.tsx        # Root layout
+├── components/            # Reusable UI components
+│   ├── home/             # Dashboard widgets
+│   ├── converter/        # Converter components
+│   ├── notes/            # Note components
+│   └── ui/               # Common UI elements
+├── src/
+│   ├── context/          # React Context providers
+│   ├── constants/        # App constants and mock data
+│   └── hooks/            # Custom React hooks
+└── assets/               # Images and static assets
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Development
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Code Style
+This project uses ESLint and TypeScript for code quality:
 
-## Join the community
+```bash
+npm run lint
+```
 
-Join our community of developers creating universal apps.
+### File-Based Routing
+Kitly uses Expo Router's file-based routing system. Routes are automatically created based on file structure in the `app/` directory.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Performance Optimizations
+
+- Reanimated 4 for smooth, 60fps animations
+- React Compiler support for optimized renders
+- Tab-based navigation for efficient memory usage
+- Lazy loading where applicable
+
+## Building for Production
+
+To build standalone apps:
+
+```bash
+eas build --platform ios
+eas build --platform android
+```
+
+For web deployment:
+
+```bash
+npm run build
+```
+
+
+
+## License
+
+Private - All rights reserved
+
+## Resources
+
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Native Docs](https://reactnative.dev/)
+- [Expo Router Guide](https://expo.dev/router)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+
+---
+
+**Built with precision. Engineered for execution.**
