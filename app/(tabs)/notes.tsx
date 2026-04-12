@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
-import { useRouter } from "expo-router";
+import Animated, {
+  FadeInDown,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  Easing,
+} from "react-native-reanimated";
+import { useFocusEffect, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import { Colors } from "@/src/constants/colors";
@@ -25,6 +32,36 @@ export default function NotesScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
   const [showAddModal, setShowAddModal] = useState(false);
 
+  const EASE = Easing.out(Easing.cubic);
+  const headerOpacity = useSharedValue(0);
+  const headerY       = useSharedValue(14);
+  const tabsOpacity   = useSharedValue(0);
+  const tabsY         = useSharedValue(14);
+
+  useFocusEffect(
+    useCallback(() => {
+      headerOpacity.value = 0;
+      headerY.value       = 14;
+      tabsOpacity.value   = 0;
+      tabsY.value         = 14;
+
+      headerOpacity.value = withTiming(1, { duration: 300, easing: EASE });
+      headerY.value       = withTiming(0, { duration: 300, easing: EASE });
+      tabsOpacity.value   = withDelay(80, withTiming(1, { duration: 280, easing: EASE }));
+      tabsY.value         = withDelay(80, withTiming(0, { duration: 280, easing: EASE }));
+    }, [])
+  );
+
+  const headerStyle = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+    transform: [{ translateY: headerY.value }],
+  }));
+
+  const tabsStyle = useAnimatedStyle(() => ({
+    opacity: tabsOpacity.value,
+    transform: [{ translateY: tabsY.value }],
+  }));
+
   const filteredNotes = notes.filter((n) => {
     if (activeFilter === "TECHNICAL") return n.type === "technical" || n.type === "sensor";
     if (activeFilter === "DRAFTS") return n.type === "simple";
@@ -43,11 +80,11 @@ export default function NotesScreen() {
       <View style={{ flex: 1, backgroundColor: Colors.bg }}>
         <ScrollView contentContainerStyle={{ padding: 20 }}>
 
-          <Animated.View entering={FadeIn.duration(300)}>
+          <Animated.View style={headerStyle}>
             <NotesHeader noteCount={notes.length} />
           </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(50)}>
+          <Animated.View style={tabsStyle}>
             <FilterTabs
               filters={FILTERS}
               active={activeFilter}

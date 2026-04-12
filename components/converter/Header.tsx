@@ -1,20 +1,17 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { Colors } from "@/src/constants/colors";
 
-type Props = {
-  onSettingsPress?: () => void;
-};
-
-const Header = ({ onSettingsPress }: Props) => {
+const Header = () => {
   return (
-    <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
+    <Animated.View entering={FadeIn.duration(300)} style={styles.container}>
       <View style={styles.logoRow}>
-        <Ionicons name="flash" size={24} color={Colors.accent} />
+        <Ionicons name="flash" size={22} color={Colors.accent} />
         <Text style={styles.logoText}>KITLY</Text>
       </View>
+      <Text style={styles.heading}>Converter</Text>
     </Animated.View>
   );
 };
@@ -22,18 +19,25 @@ const Header = ({ onSettingsPress }: Props) => {
 export default Header;
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 28,
+  container: {
+    marginBottom: 20,
   },
-  logoRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  logoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 14,
+  },
   logoText: {
     fontSize: 20,
     fontWeight: "800",
     letterSpacing: 2,
     color: Colors.textPrimary,
   },
-
+  heading: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: Colors.textPrimary,
+    letterSpacing: -0.5,
+  },
 });

@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
-import { StyleSheet, View, Text } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/src/constants/colors';
 
@@ -24,19 +23,19 @@ function TabIcon({ name, focused }: TabIconProps) {
 
 export default function TabLayout() {
   return (
-    <SafeAreaProvider>
-      <Tabs
+    <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarShowLabel: false,
+        lazy: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon name="home-outline" focused={focused}  />
+            <TabIcon name="home-outline" focused={focused} />
           ),
         }}
       />
@@ -44,7 +43,7 @@ export default function TabLayout() {
         name="converter"
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon name="swap-horizontal-outline" focused={focused}  />
+            <TabIcon name="swap-horizontal-outline" focused={focused} />
           ),
         }}
       />
@@ -52,12 +51,11 @@ export default function TabLayout() {
         name="notes"
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon name="document-text-outline" focused={focused}  />
+            <TabIcon name="document-text-outline" focused={focused} />
           ),
         }}
       />
     </Tabs>
-    </SafeAreaProvider>
   );
 }
 
