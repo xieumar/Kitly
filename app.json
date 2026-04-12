@@ -4,7 +4,7 @@
     "slug": "kitly",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/kitly-icon.svg",
     "scheme": "kitly",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,17 +13,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundColor": "#080D16",
+        "foregroundImage": "./assets/images/kitly-foreground.svg",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.zainab_i.kitly"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/kitly-icon.svg"
     },
     "plugins": [
       "expo-router",
@@ -43,6 +44,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f2bdfec4-c62b-4035-acb8-5c2f9e0992f2"
+      }
     }
   }
 }

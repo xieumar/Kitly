@@ -1,0 +1,6 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- App background -->
+  <rect width="1024" height="1024" fill="#080D16" rx="200"/>
+  <!-- Green zap icon -->
+  <path d="M512 200 L350 450 L450 450 L350 650 L550 400 L450 400 Z" fill="#00E676"/>
+</svg>
