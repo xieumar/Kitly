@@ -5,7 +5,6 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { Colors } from "@/src/constants/colors";
 
 type Props = {
-  moduleNum: string;
   title: string;
   subtitle: string;
   primaryLabel: string;
@@ -14,7 +13,6 @@ type Props = {
 };
 
 export default function ModuleCard({
-  moduleNum,
   title,
   subtitle,
   primaryLabel,
@@ -28,9 +26,7 @@ export default function ModuleCard({
           <Ionicons name={icon} size={20} color={Colors.accent} />
         </View>
 
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{moduleNum}</Text>
-        </View>
+        
       </View>
 
       <Text style={styles.title}>{title}</Text>

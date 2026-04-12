@@ -74,7 +74,6 @@ export default function HomeScreen() {
 
         {/* MODULES */}
         <ModuleCard
-          moduleNum="MODULE 01"
           title="Unit Converter"
           subtitle="Real time engineering conversion engine."
           primaryLabel="LAUNCH TOOL"
@@ -83,7 +82,6 @@ export default function HomeScreen() {
         />
 
         <ModuleCard
-          moduleNum="MODULE 02"
           title="Technical Notes"
           subtitle="Markdown-based documentation tool."
           primaryLabel="OPEN RECENT"
