@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@/src/constants/colors';
 
 type TabIconProps = {
@@ -16,19 +17,27 @@ function TabIcon({ name, focused }: TabIconProps) {
         size={20}
         color={focused ? Colors.accent : Colors.textMuted}
       />
-     
     </View>
   );
 }
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
         tabBarShowLabel: false,
         lazy: false,
+        tabBarStyle: {
+          backgroundColor: Colors.surface,
+          borderTopColor: Colors.border,
+          borderTopWidth: 1,
+          height: 60 + insets.bottom,
+          paddingTop: 8,
+          paddingBottom: insets.bottom + 4,
+        },
       }}
     >
       <Tabs.Screen
@@ -60,26 +69,9 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: Colors.bg },
-  tabBar: {
-    backgroundColor: Colors.surface,
-    borderTopColor: Colors.border,
-    borderTopWidth: 1,
-    height: 85,
-    paddingBottom: 12,
-    paddingTop: 8,
-  },
   tabItem: {
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 4,
-  },
-  tabLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.8,
-    color: Colors.textMuted,
-  },
-  tabLabelActive: {
-    color: Colors.accent,
   },
 });

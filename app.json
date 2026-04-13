@@ -4,7 +4,7 @@
     "slug": "kitly",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/kitly-icon.svg",
+    "icon": "./assets/images/kitly-icon.png",
     "scheme": "kitly",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#080D16",
-        "foregroundImage": "./assets/images/kitly-foreground.svg",
+        "foregroundImage": "./assets/images/kitly-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
