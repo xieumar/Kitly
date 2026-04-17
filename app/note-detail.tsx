@@ -63,7 +63,6 @@ export default function NoteDetailScreen() {
       title: title.trim(),
       preview: isChecklist ? `${checklistItems.length} Tasks` : body.trim(),
       completed,
-      timeAgo: 'just now',
       ...(isChecklist ? { checklistItems } : {}),
     };
     updateNote(updated);
@@ -135,7 +134,7 @@ export default function NoteDetailScreen() {
 
         {/* Content Logic */}
         {noteType === 'checklist' ? (
-          <Animated.View entering={FadeInDown.delay(160).duration(400)} style={{ marginBottom: 20 }}>
+          <Animated.View entering={FadeInDown.delay(160).duration(400)} style={{ marginBottom: 10 }}>
             <View style={styles.taskInputRow}>
               <TextInput
                 style={styles.taskInput}
@@ -215,11 +214,6 @@ export default function NoteDetailScreen() {
             <View style={styles.statusBadge}>
               <Text style={styles.statusText}>{typeLabel}</Text>
             </View>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.propertyRow}>
-            <Text style={styles.propertyKey}>Modified</Text>
-            <Text style={styles.propertyValue}>{existingNote?.timeAgo ?? '—'}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.propertyRow}>
@@ -309,7 +303,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    marginBottom: 14,
+    marginBottom: 10,
   },
   typeBadgeText: {
     fontSize: 9,
@@ -333,7 +327,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: Colors.textPrimary,
-    marginBottom: 14,
+    marginBottom: 10,
     minHeight: 56,
   },
   bodyInput: {
@@ -346,12 +340,12 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     minHeight: 180,
     lineHeight: 20,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   taskInputRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 10,
   },
   taskInput: {
     flex: 1,
@@ -541,7 +535,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 15,
+    marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
     backgroundColor: Colors.surface,

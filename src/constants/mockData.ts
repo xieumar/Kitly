@@ -6,7 +6,6 @@ export interface Task {
   title: string;
   preview: string;
   type: NoteType;
-  timeAgo?: string;
   progress?: number;
   completed?: boolean;
   checklistItems?: { label: string; status: 'pending' | 'in_progress' | 'completed' }[];

@@ -45,7 +45,6 @@ export default function AddNoteModal({ visible, onClose, onSave }: Props) {
       preview: type === "checklist" ? `${checklistItems.length} Tasks` : content.trim(),
       type,
       completed,
-      timeAgo: "just now",
       ...(type === "checklist" ? { checklistItems } : {}),
     };
     onSave(newNote);
@@ -79,11 +78,12 @@ export default function AddNoteModal({ visible, onClose, onSave }: Props) {
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
-      <Pressable style={styles.overlay} onPress={handleClose}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.avoidingView}
-        >
+      {/* KeyboardAvoidingView is now the root element inside the Modal */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.avoidingView}
+      >
+        <Pressable style={styles.overlay} onPress={handleClose}>
           <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
             <View style={styles.handle} />
 
@@ -94,9 +94,13 @@ export default function AddNoteModal({ visible, onClose, onSave }: Props) {
               </TouchableOpacity>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView 
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled" 
+              contentContainerStyle={styles.scrollContent}
+            >
               <Text style={styles.fieldLabel}>TYPE</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.typeRow}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.typeRow} keyboardShouldPersistTaps="handled">
                 {TYPE_OPTIONS.map((opt) => (
                   <TouchableOpacity
                     key={opt.key}
@@ -198,20 +202,20 @@ export default function AddNoteModal({ visible, onClose, onSave }: Props) {
               </View>
             </ScrollView>
           </Pressable>
-        </KeyboardAvoidingView>
-      </Pressable>
+        </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  avoidingView: {
+    flex: 1, // Crucial for KeyboardAvoidingView to take up the full screen
+  },
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
     backgroundColor: Colors.overlay,
-  },
-  avoidingView: {
-    justifyContent: "flex-end",
   },
   sheet: {
     backgroundColor: Colors.bg,
@@ -252,6 +256,9 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     alignItems: "center",
     justifyContent: "center",
+  },
+  scrollContent: {
+    paddingBottom: 40, // Ensures content isn't clipped by the keyboard at the very bottom
   },
   fieldLabel: {
     fontSize: 9,

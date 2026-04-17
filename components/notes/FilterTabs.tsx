@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/src/constants/colors";
 
-type FilterKey = "ALL" | "TECHNICAL" | "TASKS";
+type FilterKey = "ALL" | "TECHNICAL" ;
 
 type Props = {
   filters: FilterKey[];
@@ -14,7 +14,6 @@ type Props = {
 export default function FilterTabs({ filters, active, onChange }: Props) {
   return (
     <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 14 }}>
-      <Ionicons name="filter-outline" size={14} color={Colors.textSecondary} />
 
       {filters.map((f) => (
         <TouchableOpacity
