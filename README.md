@@ -1,4 +1,4 @@
-# Kitly 🚀
+# Kitly
 
 **Precision orchestration for your daily workflows.**
 
@@ -6,35 +6,32 @@ Kitly is a mobile app that brings professional productivity tools to your finger
 
 ## Features
 
-### 📊 Dashboard
+### Dashboard
 - Live system status 
 - Real-time clock
 - Quick access to all modules
-- System reliability monitoring *(coming soon)*
-- Recent activity tracking *(coming soon)*
+- System reliability monitoring (coming soon)
+- Recent activity tracking (coming soon)  
 
 
-### 🔄 Unit Converter
+### Unit Converter
 Convert between multiple unit systems instantly:
 - **Currency** - Track real-time exchange rates (USD, EUR, GBP, JPY, CHF, CAD, AUD, SGD)
 - **Length** - Meters, feet, kilometers, miles, and more
 - **Temperature** - Celsius to Fahrenheit conversions
 - **Weight** - Kilograms, pounds, grams, ounces, and more
 
-### 📝 Technical Notes
+### Technical Notes
 A powerful note-taking system designed for engineers and developers:
 - **Simple Notes** - Quick thoughts and drafts
 - **Technical Notes** - Detailed documentation with formatting
-- **Checklists** - Track tasks and progress *(coming soon)*
-- **Sensor Logs** - Record technical measurements *(coming soon)*
-- **Visual Notes** - Embed images and diagrams *(coming soon)*
-- Filter by type and status
+- Mark tasks as complete   
 - Full edit and delete capabilities
 
-### 🧮 Calculator
+### Calculator
 Quick calculations on demand.
 
-### ⏱️ Sequence Timer
+### Sequence Timer
 Multi-step timer for workflows and processes.
 
 ## Tech Stack
