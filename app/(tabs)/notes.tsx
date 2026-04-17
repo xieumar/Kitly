@@ -23,8 +23,9 @@ import NoteCardRenderer from "@/components/notes/NoteCardRenderer";
 import NotesFAB from "@/components/notes/NotesFAB";
 import AddNoteModal from "@/components/notes/AddNoteModal";
 
-type FilterKey = "ALL" | "TECHNICAL" | "TASKS";
-const FILTERS: FilterKey[] = ["ALL", "TECHNICAL", "TASKS"];
+// FIXED: Removed "TASKS" from the type and the array
+type FilterKey = "ALL" | "TECHNICAL";
+const FILTERS: FilterKey[] = ["ALL", "TECHNICAL"];
 
 export default function NotesScreen() {
   const router = useRouter();
@@ -64,8 +65,7 @@ export default function NotesScreen() {
 
   const filteredNotes = notes.filter((n) => {
     if (activeFilter === "TECHNICAL") return n.type === "technical" || n.type === "sensor";
-    if (activeFilter === "TASKS") return n.type === "checklist";
-    return true;
+    return true; 
   });
 
   const handleNotePress = (note: Note) => {
@@ -101,7 +101,7 @@ export default function NotesScreen() {
               <Text style={styles.emptySubtitle}>
                 {activeFilter === "ALL"
                   ? "Tap the + button to create your first note."
-                  : `No ${activeFilter.toLowerCase()} notes found. Try a different filter.`}
+                  : `No ${activeFilter.toLowerCase()} notes found.`}
               </Text>
             </Animated.View>
           ) : (

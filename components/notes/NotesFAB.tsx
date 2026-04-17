@@ -9,7 +9,7 @@ export default function NotesFAB({ onPress }: { onPress: () => void }) {
       onPress={onPress}
       style={{
         position: "absolute",
-        bottom: 88,
+        bottom: 50,
         right: 20,
         width: 54,
         height: 54,
