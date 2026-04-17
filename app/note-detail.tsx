@@ -1,21 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  Animated as RNAnimated,
-  Modal,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Colors } from '@/src/constants/colors';
 import { Note, NoteType } from '@/src/constants/mockData';
 import { useNotes } from '@/src/context/NotesContext';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+    Modal,
+    Animated as RNAnimated,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TYPE_LABELS: Record<NoteType, string> = {
   simple: 'NOTE',
@@ -52,6 +52,9 @@ export default function NoteDetailScreen() {
 
   const [title, setTitle] = useState(existingNote?.title ?? '');
   const [body, setBody] = useState(existingNote?.preview ?? '');
+  const [completed, setCompleted] = useState(existingNote?.completed ?? false);
+  const [checklistItems, setChecklistItems] = useState<{label: string; status: 'pending' | 'in_progress' | 'completed'}[]>(existingNote?.checklistItems ?? []);
+  const [newTaskInput, setNewTaskInput] = useState('');
 
   const noteType = existingNote?.type ?? 'simple';
   const typeLabel = TYPE_LABELS[noteType];
@@ -80,11 +83,14 @@ export default function NoteDetailScreen() {
 
   const handleSave = () => {
     if (!existingNote) return;
+    const isChecklist = noteType === 'checklist';
     const updated: Note = {
       ...existingNote,
       title: title.trim() || existingNote.title,
-      preview: body.trim(),
+      preview: isChecklist ? `${checklistItems.length} Tasks` : body.trim(),
+      completed,
       timeAgo: 'just now',
+      ...(isChecklist ? { checklistItems } : {}),
     };
     updateNote(updated);
     router.back();
@@ -157,20 +163,96 @@ export default function NoteDetailScreen() {
             placeholderTextColor={Colors.textMuted}
             multiline
           />
+          <TouchableOpacity 
+            style={[styles.completionToggle, completed && styles.completionToggleActive]}
+            onPress={() => setCompleted(!completed)}
+          >
+            <Ionicons 
+              name={completed ? "checkmark-circle" : "ellipse-outline"} 
+              size={18} 
+              color={completed ? Colors.accent : Colors.textSecondary} 
+            />
+            <Text style={[styles.completionToggleText, completed && styles.completionToggleTextActive]}>
+              {completed ? 'Completed' : 'Mark as complete'}
+            </Text>
+          </TouchableOpacity>
         </Animated.View>
 
 
-        <Animated.View entering={FadeInDown.delay(160).duration(400)}>
-          <TextInput
-            style={styles.bodyInput}
-            value={body}
-            onChangeText={setBody}
-            placeholder="Start writing..."
-            placeholderTextColor={Colors.textMuted}
-            multiline
-            textAlignVertical="top"
-          />
-        </Animated.View>
+        {noteType === 'checklist' ? (
+          <Animated.View entering={FadeInDown.delay(160).duration(400)} style={{ marginBottom: 20 }}>
+            <View style={styles.taskInputRow}>
+              <TextInput
+                style={styles.taskInput}
+                value={newTaskInput}
+                onChangeText={setNewTaskInput}
+                placeholder="Add a new task..."
+                placeholderTextColor={Colors.textMuted}
+                onSubmitEditing={() => {
+                  if (!newTaskInput.trim()) return;
+                  setChecklistItems([...checklistItems, { label: newTaskInput.trim(), status: 'pending' }]);
+                  setNewTaskInput('');
+                }}
+              />
+              <TouchableOpacity
+                style={styles.addTaskBtn}
+                onPress={() => {
+                  if (!newTaskInput.trim()) return;
+                  setChecklistItems([...checklistItems, { label: newTaskInput.trim(), status: 'pending' }]);
+                  setNewTaskInput('');
+                }}
+              >
+                <Ionicons name="add" size={20} color={Colors.bg} />
+              </TouchableOpacity>
+            </View>
+            {checklistItems.map((item, idx) => (
+              <View key={idx} style={styles.taskItem}>
+                <TouchableOpacity
+                  onPress={() => {
+                    const newItems = [...checklistItems];
+                    const current = newItems[idx].status;
+                    if (current === 'pending') newItems[idx].status = 'in_progress';
+                    else if (current === 'in_progress') newItems[idx].status = 'completed';
+                    else newItems[idx].status = 'pending';
+                    setChecklistItems(newItems);
+                  }}
+                >
+                  {item.status === 'completed' ? (
+                    <Ionicons name="checkmark-circle" size={22} color={Colors.accent} />
+                  ) : item.status === 'in_progress' ? (
+                    <Ionicons name="hourglass-outline" size={22} color={Colors.warning} />
+                  ) : (
+                    <Ionicons name="ellipse-outline" size={22} color={Colors.textMuted} />
+                  )}
+                </TouchableOpacity>
+                <Text style={[styles.taskItemText, item.status === 'completed' && styles.taskItemTextDone]}>
+                  {item.label}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    const newItems = [...checklistItems];
+                    newItems.splice(idx, 1);
+                    setChecklistItems(newItems);
+                  }}
+                >
+                  <Ionicons name="trash-outline" size={18} color={Colors.danger} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </Animated.View>
+        ) : (
+          <Animated.View entering={FadeInDown.delay(160).duration(400)}>
+            <TextInput
+              style={styles.bodyInput}
+              value={body}
+              onChangeText={setBody}
+              placeholder="Start writing..."
+              placeholderTextColor={Colors.textMuted}
+              multiline
+              textAlignVertical="top"
+            />
+          </Animated.View>
+        )}
 
         <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.propertiesCard}>
           <Text style={styles.propertiesTitle}>Properties</Text>
@@ -187,8 +269,8 @@ export default function NoteDetailScreen() {
           </View>
           <View style={styles.divider} />
           <View style={styles.propertyRow}>
-            <Text style={styles.propertyKey}>Word Count</Text>
-            <Text style={styles.propertyValue}>{wordCount.toLocaleString()}</Text>
+            <Text style={styles.propertyKey}>{noteType === 'checklist' ? 'Total Tasks' : 'Word Count'}</Text>
+            <Text style={styles.propertyValue}>{noteType === 'checklist' ? checklistItems.length : wordCount.toLocaleString()}</Text>
           </View>
 
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave} activeOpacity={0.85}>
@@ -334,6 +416,48 @@ const styles = StyleSheet.create({
     minHeight: 180,
     lineHeight: 20,
     marginBottom: 20,
+  },
+  taskInputRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  taskInput: {
+    flex: 1,
+    backgroundColor: Colors.card,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    padding: 14,
+    fontSize: 14,
+    color: Colors.textPrimary,
+  },
+  addTaskBtn: {
+    backgroundColor: Colors.accent,
+    width: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  taskItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 10,
+    gap: 12,
+  },
+  taskItemText: {
+    flex: 1,
+    fontSize: 15,
+    color: Colors.textPrimary,
+  },
+  taskItemTextDone: {
+    textDecorationLine: 'line-through',
+    color: Colors.textMuted,
   },
   propertiesCard: {
     backgroundColor: Colors.card,
@@ -505,5 +629,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: Colors.bg,
+  },
+  completionToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  completionToggleActive: {
+    borderColor: Colors.accentBorder,
+    backgroundColor: Colors.accentDim,
+  },
+  completionToggleText: {
+    
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+  },
+  completionToggleTextActive: {
+    color: Colors.accent,
   },
 });

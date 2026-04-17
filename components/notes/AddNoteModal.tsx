@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Pressable,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/src/constants/colors";
 import { Note, NoteType } from "@/src/constants/mockData";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
+import {
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 const TYPE_OPTIONS: { key: NoteType; label: string; icon: string }[] = [
   { key: "simple", label: "Note", icon: "document-text-outline" },
@@ -33,28 +33,48 @@ export default function AddNoteModal({ visible, onClose, onSave }: Props) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [type, setType] = useState<NoteType>("simple");
+  const [completed, setCompleted] = useState(false);
+  const [checklistItems, setChecklistItems] = useState<{label: string; status: 'pending' | 'in_progress' | 'completed'}[]>([]);
+  const [taskInput, setTaskInput] = useState("");
 
   const handleSave = () => {
     if (!title.trim()) return;
     const newNote: Note = {
       id: Date.now().toString(),
       title: title.trim(),
-      preview: content.trim(),
+      preview: type === "checklist" ? `${checklistItems.length} Tasks` : content.trim(),
       type,
+      completed,
       timeAgo: "just now",
+      ...(type === "checklist" ? { checklistItems } : {}),
     };
     onSave(newNote);
-    setTitle("");
-    setContent("");
-    setType("simple");
+    resetForm();
     onClose();
   };
 
-  const handleClose = () => {
+  const resetForm = () => {
     setTitle("");
     setContent("");
     setType("simple");
+    setCompleted(false);
+    setChecklistItems([]);
+    setTaskInput("");
+  };
+
+  const handleClose = () => {
+    resetForm();
     onClose();
+  };
+
+  const addTask = () => {
+    if (!taskInput.trim()) return;
+    setChecklistItems([...checklistItems, { label: taskInput.trim(), status: 'pending' }]);
+    setTaskInput("");
+  };
+
+  const removeTask = (index: number) => {
+    setChecklistItems(checklistItems.filter((_, i) => i !== index));
   };
 
   return (
@@ -108,17 +128,60 @@ export default function AddNoteModal({ visible, onClose, onSave }: Props) {
                 returnKeyType="next"
               />
 
-              <Text style={styles.fieldLabel}>CONTENT</Text>
-              <TextInput
-                value={content}
-                onChangeText={setContent}
-                placeholder="Write your note here..."
-                placeholderTextColor={Colors.textMuted}
-                style={styles.contentInput}
-                multiline
-                textAlignVertical="top"
-                maxLength={1000}
-              />
+              <View style={styles.completedRow}>
+                <TouchableOpacity
+                  style={[styles.checkbox, completed && styles.checkboxActive]}
+                  onPress={() => setCompleted(!completed)}
+                >
+                  {completed && (
+                    <Ionicons name="checkmark" size={14} color={Colors.bg} />
+                  )}
+                </TouchableOpacity>
+                <Text style={styles.completedLabel}>Mark as completed</Text>
+              </View>
+
+              {type === "checklist" ? (
+                <>
+                  <Text style={styles.fieldLabel}>TASKS</Text>
+                  <View style={styles.taskInputRow}>
+                    <TextInput
+                      value={taskInput}
+                      onChangeText={setTaskInput}
+                      placeholder="Add a task..."
+                      placeholderTextColor={Colors.textMuted}
+                      style={styles.taskInput}
+                      onSubmitEditing={addTask}
+                    />
+                    <TouchableOpacity style={styles.addTaskBtn} onPress={addTask}>
+                      <Ionicons name="add" size={20} color={Colors.bg} />
+                    </TouchableOpacity>
+                  </View>
+                  {checklistItems.map((item, idx) => (
+                    <View key={idx} style={styles.taskItem}>
+                      <Ionicons name="ellipse-outline" size={16} color={Colors.textMuted} />
+                      <Text style={styles.taskItemText}>{item.label}</Text>
+                      <TouchableOpacity onPress={() => removeTask(idx)}>
+                        <Ionicons name="close" size={16} color={Colors.textMuted} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                  <View style={{ marginBottom: 20 }} />
+                </>
+              ) : (
+                <>
+                  <Text style={styles.fieldLabel}>CONTENT</Text>
+                  <TextInput
+                    value={content}
+                    onChangeText={setContent}
+                    placeholder="Write your note here..."
+                    placeholderTextColor={Colors.textMuted}
+                    style={styles.contentInput}
+                    multiline
+                    textAlignVertical="top"
+                    maxLength={1000}
+                  />
+                </>
+              )}
 
               <View style={styles.footer}>
                 <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
@@ -248,6 +311,45 @@ const styles = StyleSheet.create({
     minHeight: 120,
     marginBottom: 20,
   },
+  taskInputRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 12,
+  },
+  taskInput: {
+    flex: 1,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 14,
+    color: Colors.textPrimary,
+  },
+  addTaskBtn: {
+    backgroundColor: Colors.accent,
+    width: 44,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  taskItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 10,
+    marginBottom: 8,
+    gap: 10,
+  },
+  taskItemText: {
+    flex: 1,
+    fontSize: 14,
+    color: Colors.textPrimary,
+  },
   footer: {
     flexDirection: "row",
     gap: 10,
@@ -284,5 +386,31 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: Colors.bg,
     letterSpacing: 0.5,
+  },
+  completedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingVertical: 10,
+    marginBottom: 16,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: Colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.surface,
+  },
+  checkboxActive: {
+    backgroundColor: Colors.accent,
+    borderColor: Colors.accent,
+  },
+  completedLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: Colors.textSecondary,
   },
 });

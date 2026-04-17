@@ -1,6 +1,6 @@
 export type NoteType = 'technical' | 'visual' | 'simple' | 'checklist' | 'sensor';
 
-export interface Note {
+export interface Task {
   id: string;
   tag?: string;
   title: string;
@@ -8,9 +8,13 @@ export interface Note {
   type: NoteType;
   timeAgo?: string;
   progress?: number;
-  checklistItems?: { label: string; done: boolean }[];
+  completed?: boolean;
+  checklistItems?: { label: string; status: 'pending' | 'in_progress' | 'completed' }[];
   hasImage?: boolean;
 }
+
+// Keep Note as alias for backwards compatibility during migration
+export type Note = Task;
 
 export interface LinkedProject {
   id: string;
@@ -19,7 +23,10 @@ export interface LinkedProject {
   icon: string;
 }
 
-export const NOTES: Note[] = [];
+export const TASKS: Task[] = [];
+
+// Keep NOTES for backwards compatibility
+export const NOTES = TASKS;
 
 export const LINKED_PROJECTS: LinkedProject[] = [
   {

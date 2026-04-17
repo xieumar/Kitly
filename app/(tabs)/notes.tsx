@@ -23,8 +23,8 @@ import NoteCardRenderer from "@/components/notes/NoteCardRenderer";
 import NotesFAB from "@/components/notes/NotesFAB";
 import AddNoteModal from "@/components/notes/AddNoteModal";
 
-type FilterKey = "ALL" | "TECHNICAL" | "DRAFTS";
-const FILTERS: FilterKey[] = ["ALL", "TECHNICAL", "DRAFTS"];
+type FilterKey = "ALL" | "TECHNICAL" | "TASKS";
+const FILTERS: FilterKey[] = ["ALL", "TECHNICAL", "TASKS"];
 
 export default function NotesScreen() {
   const router = useRouter();
@@ -64,7 +64,7 @@ export default function NotesScreen() {
 
   const filteredNotes = notes.filter((n) => {
     if (activeFilter === "TECHNICAL") return n.type === "technical" || n.type === "sensor";
-    if (activeFilter === "DRAFTS") return n.type === "simple";
+    if (activeFilter === "TASKS") return n.type === "checklist";
     return true;
   });
 

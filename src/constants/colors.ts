@@ -16,4 +16,6 @@ export const Colors = {
   overlay: 'rgba(0,0,0,0.6)',
   tagBlue: '#1565C0',
   tagBlueDim: 'rgba(21,101,192,0.2)',
+  warning: '#FFB300',
+  warningDim: 'rgba(255,179,0,0.12)',
 };

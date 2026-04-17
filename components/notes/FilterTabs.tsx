@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/src/constants/colors";
 
-type FilterKey = "ALL" | "TECHNICAL" | "DRAFTS";
+type FilterKey = "ALL" | "TECHNICAL" | "TASKS";
 
 type Props = {
   filters: FilterKey[];
