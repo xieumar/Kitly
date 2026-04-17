@@ -5,14 +5,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Modal,
-    Animated as RNAnimated,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Modal,
+  Animated as RNAnimated,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,24 +25,6 @@ const TYPE_LABELS: Record<NoteType, string> = {
   visual: 'VISUAL',
 };
 
-type FormatButtonProps = {
-  icon: keyof typeof Ionicons.glyphMap;
-  onPress: () => void;
-  active?: boolean;
-};
-
-function FormatButton({ icon, onPress, active }: FormatButtonProps) {
-  return (
-    <TouchableOpacity
-      style={[styles.formatBtn, active && styles.formatBtnActive]}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
-      <Ionicons name={icon} size={15} color={active ? Colors.accent : Colors.textSecondary} />
-    </TouchableOpacity>
-  );
-}
-
 export default function NoteDetailScreen() {
   const router = useRouter();
   const { updateNote, deleteNote } = useNotes();
@@ -53,7 +35,7 @@ export default function NoteDetailScreen() {
   const [title, setTitle] = useState(existingNote?.title ?? '');
   const [body, setBody] = useState(existingNote?.preview ?? '');
   const [completed, setCompleted] = useState(existingNote?.completed ?? false);
-  const [checklistItems, setChecklistItems] = useState<{label: string; status: 'pending' | 'in_progress' | 'completed'}[]>(existingNote?.checklistItems ?? []);
+  const [checklistItems, setChecklistItems] = useState<{ label: string; status: 'pending' | 'in_progress' | 'completed' }[]>(existingNote?.checklistItems ?? []);
   const [newTaskInput, setNewTaskInput] = useState('');
 
   const noteType = existingNote?.type ?? 'simple';
@@ -69,24 +51,16 @@ export default function NoteDetailScreen() {
   const [toastType, setToastType] = useState<'success' | 'danger'>('success');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const showToast = (msg: string, type: 'success' | 'danger' = 'success') => {
-    if (toastTimeout.current) clearTimeout(toastTimeout.current);
-    setToastMsg(msg);
-    setToastType(type);
-    RNAnimated.spring(toastAnim, { toValue: 1, useNativeDriver: true, speed: 20 }).start();
-    toastTimeout.current = setTimeout(() => {
-      RNAnimated.timing(toastAnim, { toValue: 0, duration: 300, useNativeDriver: true }).start();
-    }, 2000);
-  };
-
-  useEffect(() => () => { if (toastTimeout.current) clearTimeout(toastTimeout.current); }, []);
+  // Check if the save button should be disabled
+  const isSaveDisabled = !title.trim();
 
   const handleSave = () => {
-    if (!existingNote) return;
+    if (isSaveDisabled || !existingNote) return;
+
     const isChecklist = noteType === 'checklist';
     const updated: Note = {
       ...existingNote,
-      title: title.trim() || existingNote.title,
+      title: title.trim(),
       preview: isChecklist ? `${checklistItems.length} Tasks` : body.trim(),
       completed,
       timeAgo: 'just now',
@@ -110,27 +84,7 @@ export default function NoteDetailScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <RNAnimated.View
-        pointerEvents="none"
-        style={[
-          styles.toast,
-          toastType === 'danger' ? styles.toastDanger : styles.toastSuccess,
-          {
-            opacity: toastAnim,
-            transform: [{ translateY: toastAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
-          },
-        ]}
-      >
-        <Ionicons
-          name={toastType === 'danger' ? 'alert-circle' : 'checkmark-circle'}
-          size={16}
-          color={toastType === 'danger' ? Colors.danger : Colors.accent}
-        />
-        <Text style={[styles.toastText, toastType === 'danger' ? { color: Colors.danger } : { color: Colors.accent }]}>
-          {toastMsg}
-        </Text>
-      </RNAnimated.View>
-
+      {/* Header */}
       <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
           <Ionicons name="arrow-back" size={20} color={Colors.textSecondary} />
@@ -153,6 +107,7 @@ export default function NoteDetailScreen() {
           </View>
         </Animated.View>
 
+        {/* Title Input */}
         <Animated.View entering={FadeInDown.delay(80).duration(400)}>
           <Text style={styles.fieldLabel}>DOCUMENT TITLE</Text>
           <TextInput
@@ -163,14 +118,14 @@ export default function NoteDetailScreen() {
             placeholderTextColor={Colors.textMuted}
             multiline
           />
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.completionToggle, completed && styles.completionToggleActive]}
             onPress={() => setCompleted(!completed)}
           >
-            <Ionicons 
-              name={completed ? "checkmark-circle" : "ellipse-outline"} 
-              size={18} 
-              color={completed ? Colors.accent : Colors.textSecondary} 
+            <Ionicons
+              name={completed ? "checkmark-circle" : "ellipse-outline"}
+              size={18}
+              color={completed ? Colors.accent : Colors.textSecondary}
             />
             <Text style={[styles.completionToggleText, completed && styles.completionToggleTextActive]}>
               {completed ? 'Completed' : 'Mark as complete'}
@@ -178,7 +133,7 @@ export default function NoteDetailScreen() {
           </TouchableOpacity>
         </Animated.View>
 
-
+        {/* Content Logic */}
         {noteType === 'checklist' ? (
           <Animated.View entering={FadeInDown.delay(160).duration(400)} style={{ marginBottom: 20 }}>
             <View style={styles.taskInputRow}>
@@ -217,13 +172,11 @@ export default function NoteDetailScreen() {
                     setChecklistItems(newItems);
                   }}
                 >
-                  {item.status === 'completed' ? (
-                    <Ionicons name="checkmark-circle" size={22} color={Colors.accent} />
-                  ) : item.status === 'in_progress' ? (
-                    <Ionicons name="hourglass-outline" size={22} color={Colors.warning} />
-                  ) : (
-                    <Ionicons name="ellipse-outline" size={22} color={Colors.textMuted} />
-                  )}
+                  <Ionicons
+                    name={item.status === 'completed' ? "checkmark-circle" : item.status === 'in_progress' ? "hourglass-outline" : "ellipse-outline"}
+                    size={22}
+                    color={item.status === 'completed' ? Colors.accent : item.status === 'in_progress' ? Colors.warning : Colors.textMuted}
+                  />
                 </TouchableOpacity>
                 <Text style={[styles.taskItemText, item.status === 'completed' && styles.taskItemTextDone]}>
                   {item.label}
@@ -254,6 +207,7 @@ export default function NoteDetailScreen() {
           </Animated.View>
         )}
 
+        {/* Properties Card */}
         <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.propertiesCard}>
           <Text style={styles.propertiesTitle}>Properties</Text>
           <View style={styles.propertyRow}>
@@ -273,7 +227,13 @@ export default function NoteDetailScreen() {
             <Text style={styles.propertyValue}>{noteType === 'checklist' ? checklistItems.length : wordCount.toLocaleString()}</Text>
           </View>
 
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSave} activeOpacity={0.85}>
+          {/* SAVE BUTTON - FIXED LOGIC */}
+          <TouchableOpacity
+            style={[styles.saveBtn, isSaveDisabled && styles.saveBtnDisabled]}
+            onPress={handleSave}
+            activeOpacity={0.85}
+            disabled={isSaveDisabled}
+          >
             <Ionicons name="save-outline" size={16} color={Colors.bg} />
             <Text style={styles.saveBtnText}>SAVE NOTE</Text>
           </TouchableOpacity>
@@ -287,6 +247,7 @@ export default function NoteDetailScreen() {
         <View style={{ height: 40 }} />
       </ScrollView>
 
+      {/* Delete Modal */}
       <Modal visible={showDeleteModal} transparent animationType="fade" onRequestClose={() => setShowDeleteModal(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -338,16 +299,6 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     color: Colors.textPrimary,
   },
-  headerIconBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scrollView: { flex: 1 },
   content: { padding: 20 },
   typeBadge: {
@@ -384,26 +335,6 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginBottom: 14,
     minHeight: 56,
-  },
-  toolbarRow: {
-    flexDirection: 'row',
-    gap: 4,
-    backgroundColor: Colors.card,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    padding: 8,
-    marginBottom: 14,
-  },
-  formatBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  formatBtnActive: {
-    backgroundColor: Colors.accentDim,
   },
   bodyInput: {
     backgroundColor: Colors.card,
@@ -507,6 +438,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
+  saveBtnDisabled: {
+    opacity: 0.4,
+  },
   saveBtnText: {
     fontSize: 12,
     fontWeight: '800',
@@ -529,33 +463,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.danger,
     letterSpacing: 1,
-  },
-  toast: {
-    position: 'absolute',
-    bottom: 40,
-    left: 24,
-    right: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 14,
-    borderWidth: 1,
-    zIndex: 999,
-  },
-  toastSuccess: {
-    backgroundColor: Colors.accentDim,
-    borderColor: Colors.accentBorder,
-  },
-  toastDanger: {
-    backgroundColor: Colors.dangerDim,
-    borderColor: 'rgba(255,59,71,0.3)',
-  },
-  toastText: {
-    fontSize: 13,
-    fontWeight: '700',
-    flex: 1,
   },
   modalOverlay: {
     flex: 1,
@@ -647,7 +554,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accentDim,
   },
   completionToggleText: {
-    
     fontSize: 14,
     fontWeight: '600',
     color: Colors.textSecondary,
